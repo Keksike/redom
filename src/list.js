@@ -4,10 +4,26 @@ import { unmount } from './mount';
 
 const propKey = key => item => item[key];
 
+/**
+ * List factory
+ * @return {List}
+ * @param {(Node | function)} parent
+ * @param {function} View
+ * @param {String | function} key
+ * @param {*} initData
+ */
 export function list (parent, View, key, initData) {
   return new List(parent, View, key, initData);
 }
 
+/**
+ * Create list of Views
+ * @return {List}
+ * @param {(Node | function)} parent
+ * @param {function} View
+ * @param {String | function} key
+ * @param {*} initData
+ */
 export function List (parent, View, key, initData) {
   this.__redom_list = true;
   this.View = View;
@@ -21,9 +37,18 @@ export function List (parent, View, key, initData) {
   }
 }
 
-List.extend = function (parent, View, key, initData) {
+/**
+ *
+ * @param {(Node | function)} parent
+ * @param {function} View
+ * @param {String | function} key
+ * @param {*} initData
+ */
+function extend (parent, View, key, initData) {
   return List.bind(List, parent, View, key, initData);
-};
+}
+
+List.extend = extend;
 
 list.extend = List.extend;
 

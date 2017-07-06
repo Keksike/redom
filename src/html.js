@@ -5,6 +5,12 @@ const htmlCache = {};
 
 const memoizeHTML = query => htmlCache[query] || (htmlCache[query] = createElement(query));
 
+/**
+ * Create HTML elements with HyperScript-like syntax.
+ * @return {Node}
+ * @param {(String|Node)} query - Query (tagname#ids.classes)
+ * @param {*} args
+ */
 export function html (query, ...args) {
   let element;
 
@@ -21,10 +27,16 @@ export function html (query, ...args) {
   return element;
 }
 
-html.extend = function (query) {
+/**
+ * @return {html}
+ * @param {{(String|Node)}} query - Query (tagname#ids.classes)
+ */
+function extend (query) {
   const clone = memoizeHTML(query);
 
   return html.bind(this, clone);
-};
+}
+
+html.extend = extend;
 
 export const el = html;
