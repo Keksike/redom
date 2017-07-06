@@ -10,7 +10,7 @@
     "dist": "gh-pages -d dist",
     "build-es": "rollup -m -c rollup.config.es.js -n redom -f es -i src/index.js -o dist/redom.es.js",
     "build-js": "rollup -m -c -n redom -f umd -i src/index.js -o dist/redom.js",
-    "watch-es": "rollup -w -m -c -n redom -f es -i src/index.js -o dist/redom.es.js",
+    "watch-es": "rollup -w -c rollup.config.es.js -n redom -f es -i src/index.js -o dist/redom.es.js",
     "watch-js": "rollup -w -m -c -n redom -f umd -i src/index.js -o dist/redom.js",
     "build": "npm run build-es && npm run build-js",
     "uglify": "uglifyjs dist/redom.js -cmo dist/redom.min.js",

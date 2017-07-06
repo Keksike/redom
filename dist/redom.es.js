@@ -1,2 +1,540 @@
-var HASH=35,DOT=46;function createElement(a,b){var c,d,e,f=0,g=0;for(var h=0;h<=a.length;h++){var i=a.charCodeAt(h);if(i===HASH||i===DOT||!i){if(f===0)h===0?(c='div'):i?(c=a.substring(g,h)):(c=a);else{var j=a.substring(g,h);f===1?(d=j):e?(e+=' '+j):(e=j)}g=h+1;i===HASH?(f=1):(f=2)}}var k=b?document.createElementNS(b,c):document.createElement(c);d&&(k.id=d);e&&(b?k.setAttribute('class',e):(k.className=e));return k}var hookNames=['onmount','onunmount'];function mount(a,b,c){var d=getEl(a),e=getEl(b);b===e&&e.__redom_view&&(b=e.__redom_view);b!==e&&(e.__redom_view=b);var f=e.__redom_mounted,g=e.parentNode;f&&g!==d&&doUnmount(b,e,g);c!=null?d.insertBefore(e,getEl(c)):d.appendChild(e);doMount(b,e,d,g);return b}function unmount(a,b){var c=getEl(a),d=getEl(b);b===d&&d.__redom_view&&(b=d.__redom_view);doUnmount(b,d,c);c.removeChild(d);return b}function doMount(a,b,c,d){var e=b.__redom_lifecycle||(b.__redom_lifecycle={}),f=c===d,g=!1;for(var h=0;h<hookNames.length;h++){var i=hookNames[h];!f&&a!==b&&i in a&&(e[i]=(e[i]||0)+1);e[i]&&(g=!0)}if(!g){b.__redom_mounted=!0;return}var j=c,k=!1;(f||!k&&(j&&j.__redom_mounted))&&(trigger(b,f?'onremount':'onmount'),k=!0);if(f){return}while(j){var l=j.parentNode,m=j.__redom_lifecycle||(j.__redom_lifecycle={});for(var n in e)m[n]=(m[n]||0)+e[n];!k&&(j===document||l&&l.__redom_mounted)&&(trigger(j,f?'onremount':'onmount'),k=!0);j=l}}function doUnmount(a,b,c){var d=b.__redom_lifecycle;if(!d){b.__redom_mounted=!1;return}var e=c;b.__redom_mounted&&trigger(b,'onunmount');while(e){var f=e.__redom_lifecycle||(e.__redom_lifecycle={}),g=!1;for(var h in d)f[h]&&(f[h]-=d[h]),f[h]&&(g=!0);g||(e.__redom_lifecycle=null);e=e.parentNode}}function trigger(a,b){b==='onmount'?(a.__redom_mounted=!0):b==='onunmount'&&(a.__redom_mounted=!1);var c=a.__redom_lifecycle;if(!c){return}var d=a.__redom_view,e=0;d&&d[b]&&d[b]();for(var f in c)f&&e++;if(e){var g=a.firstChild;while(g){var h=g.nextSibling;trigger(g,b);g=h}}}function setStyle(a,b,c){var d=getEl(a);if(c!==undefined)d.style[b]=c;else if(isString(b))d.setAttribute('style',b);else{for(var e in b)setStyle(d,e,b[e])}}function setAttr(a,b,c){var d=getEl(a),e=d instanceof window.SVGElement;if(c!==undefined)b==='style'?setStyle(d,c):e&&isFunction(c)?(d[b]=c):!e&&(b in d||isFunction(c))?(d[b]=c):d.setAttribute(b,c);else{for(var f in b)setAttr(d,f,b[f])}}var text=function(a){return document.createTextNode(a)};function parseArguments(a,b){for(var c=0;c<b.length;c++){var d=b[c];if(d!==0&&!d){continue}typeof d==='function'?d(a):isString(d)||isNumber(d)?a.appendChild(text(d)):isNode(getEl(d))?mount(a,d):d.length?parseArguments(a,d):typeof d==='object'&&setAttr(a,d)}}var ensureEl=function(a){return isString(a)?html(a):getEl(a)},getEl=function(a){return a.nodeType&&a||!a.el&&a||getEl(a.el)},isString=function(a){return typeof a==='string'},isNumber=function(a){return typeof a==='number'},isFunction=function(a){return typeof a==='function'},isNode=function(a){return a&&a.nodeType},htmlCache={},memoizeHTML=function(a){return htmlCache[a]||(htmlCache[a]=createElement(a))};function html(a){var b=[],c=arguments.length-1;while(c-->0)b[c]=arguments[c+1];var d;if(isString(a))d=memoizeHTML(a).cloneNode(!1);else if(isNode(a))d=a.cloneNode(!1);else{throw new Error('At least one argument required')};parseArguments(d,b);return d}function extend(a){var b=memoizeHTML(a);return html.bind(this,b)}html.extend=extend;var el=html;function setChildren(a,b){if(b.length===undefined){return setChildren(a,[b])}var c=getEl(a),d=c.firstChild;for(var e=0;e<b.length;e++){var f=b[e];if(!f){continue}var g=getEl(f);if(g===d){d=d.nextSibling;continue}mount(a,f,d)}while(d){var h=d.nextSibling;unmount(a,d);d=h}}var propKey=function(a){return function(b){return b[a]}};function list(a,b,c,d){return new List(a,b,c,d)}function List(a,b,c,d){this.__redom_list=!0;this.View=b;this.initData=d;this.views=[];this.el=ensureEl(a);c!=null&&(this.lookup={},this.key=isFunction(c)?c:propKey(c))}function extend$1(a,b,c,d){return List.bind(List,a,b,c,d)}List.extend=extend$1;list.extend=List.extend;List.prototype.update=function(a){var b=this;a===void 0&&(a=[]);var c=this.View,d=this.key,e=d!=null,f=this.initData,g=new Array(a.length),h=this.views,i=d&&{},j=d&&this.lookup;for(var k=0;k<a.length;k++){var l=a[k],m=void 0;if(e){var n=d(l);m=g[k]=j[n]||new c(f,l,k,a);i[n]=m;m.__id=n}else m=g[k]=h[k]||new c(f,l,k,a);var o=m.el;o.__redom_list&&(o=o.el);o.__redom_view=m;m.update&&m.update(l,k,a)}if(e){for(var p=0;p<h.length;p++){var q=h[p].__id;(q in i)||unmount(b,j[q])}}setChildren(this,g);e&&(this.lookup=i);this.views=g};function router(a,b,c){return new Router(a,b,c)}var Router=function d(a,b,c){this.el=ensureEl(a);this.Views=b;this.initData=c};Router.prototype.update=function c(a,b){if(a!==this.route){var d=this.Views,e=d[a];this.view=e&&new e(this.initData,b);this.route=a;setChildren(this.el,[this.view])}this.view&&this.view.update&&this.view.update(b,a)};var SVG='http://www.w3.org/2000/svg',svgCache={},memoizeSVG=function(a){return svgCache[a]||(svgCache[a]=createElement(a,SVG))};function svg(a){var b=[],c=arguments.length-1;while(c-->0)b[c]=arguments[c+1];var d;if(isString(a))d=memoizeSVG(a).cloneNode(!1);else if(isNode(a))d=a.cloneNode(!1);else{throw new Error('At least one argument required')};parseArguments(d,b);return d}svg.extend=function(a){var b=memoizeSVG(a);return svg.bind(this,b)};export { html, el, list, List, mount, unmount, router, Router, setAttr, setStyle, setChildren, svg, text }
-//# sourceMappingURL=redom.es.js.map
+var HASH = '#'.charCodeAt(0);
+var DOT = '.'.charCodeAt(0);
+
+/**
+ * Create HTML or SVG elements by query and namespace
+ * @return {Node}
+ * @param {string} query - Query (tagname#ids.classes)
+ * @param {string} ns - Namespace
+ */
+function createElement (query, ns) {
+  var tag;
+  var id;
+  var className;
+
+  var mode = 0;
+  var start = 0;
+
+  for (var i = 0; i <= query.length; i++) {
+    var char = query.charCodeAt(i);
+
+    if (char === HASH || char === DOT || !char) {
+      if (mode === 0) {
+        if (i === 0) {
+          tag = 'div';
+        } else if (!char) {
+          tag = query;
+        } else {
+          tag = query.substring(start, i);
+        }
+      } else {
+        var slice = query.substring(start, i);
+
+        if (mode === 1) {
+          id = slice;
+        } else if (className) {
+          className += ' ' + slice;
+        } else {
+          className = slice;
+        }
+      }
+
+      start = i + 1;
+
+      if (char === HASH) {
+        mode = 1;
+      } else {
+        mode = 2;
+      }
+    }
+  }
+
+  var element = ns ? document.createElementNS(ns, tag) : document.createElement(tag);
+
+  if (id) {
+    element.id = id;
+  }
+
+  if (className) {
+    if (ns) {
+      element.setAttribute('class', className);
+    } else {
+      element.className = className;
+    }
+  }
+
+  return element;
+}
+
+var hookNames = ['onmount', 'onunmount'];
+
+function mount (parent, child, before) {
+  var parentEl = getEl(parent);
+  var childEl = getEl(child);
+
+  if (child === childEl && childEl.__redom_view) {
+    // try to look up the view if not provided
+    child = childEl.__redom_view;
+  }
+
+  if (child !== childEl) {
+    childEl.__redom_view = child;
+  }
+
+  var wasMounted = childEl.__redom_mounted;
+  var oldParent = childEl.parentNode;
+
+  if (wasMounted && (oldParent !== parentEl)) {
+    doUnmount(child, childEl, oldParent);
+  }
+
+  if (before != null) {
+    parentEl.insertBefore(childEl, getEl(before));
+  } else {
+    parentEl.appendChild(childEl);
+  }
+
+  doMount(child, childEl, parentEl, oldParent);
+
+  return child;
+}
+
+function unmount (parent, child) {
+  var parentEl = getEl(parent);
+  var childEl = getEl(child);
+
+  if (child === childEl && childEl.__redom_view) {
+    // try to look up the view if not provided
+    child = childEl.__redom_view;
+  }
+
+  doUnmount(child, childEl, parentEl);
+
+  parentEl.removeChild(childEl);
+
+  return child;
+}
+
+function doMount (child, childEl, parentEl, oldParent) {
+  var hooks = childEl.__redom_lifecycle || (childEl.__redom_lifecycle = {});
+  var remount = (parentEl === oldParent);
+  var hooksFound = false;
+
+  for (var i = 0; i < hookNames.length; i++) {
+    var hookName = hookNames[i];
+
+    if (!remount && (child !== childEl) && (hookName in child)) {
+      hooks[hookName] = (hooks[hookName] || 0) + 1;
+    }
+    if (hooks[hookName]) {
+      hooksFound = true;
+    }
+  }
+
+  if (!hooksFound) {
+    childEl.__redom_mounted = true;
+    return;
+  }
+
+  var traverse = parentEl;
+  var triggered = false;
+
+  if (remount || (!triggered && (traverse && traverse.__redom_mounted))) {
+    trigger(childEl, remount ? 'onremount' : 'onmount');
+    triggered = true;
+  }
+
+  if (remount) {
+    return;
+  }
+
+  while (traverse) {
+    var parent = traverse.parentNode;
+    var parentHooks = traverse.__redom_lifecycle || (traverse.__redom_lifecycle = {});
+
+    for (var hook in hooks) {
+      parentHooks[hook] = (parentHooks[hook] || 0) + hooks[hook];
+    }
+
+    if (!triggered && (traverse === document || (parent && parent.__redom_mounted))) {
+      trigger(traverse, remount ? 'onremount' : 'onmount');
+      triggered = true;
+    }
+
+    traverse = parent;
+  }
+}
+
+function doUnmount (child, childEl, parentEl) {
+  var hooks = childEl.__redom_lifecycle;
+
+  if (!hooks) {
+    childEl.__redom_mounted = false;
+    return;
+  }
+
+  var traverse = parentEl;
+
+  if (childEl.__redom_mounted) {
+    trigger(childEl, 'onunmount');
+  }
+
+  while (traverse) {
+    var parentHooks = traverse.__redom_lifecycle || (traverse.__redom_lifecycle = {});
+    var hooksFound = false;
+
+    for (var hook in hooks) {
+      if (parentHooks[hook]) {
+        parentHooks[hook] -= hooks[hook];
+      }
+      if (parentHooks[hook]) {
+        hooksFound = true;
+      }
+    }
+
+    if (!hooksFound) {
+      traverse.__redom_lifecycle = null;
+    }
+
+    traverse = traverse.parentNode;
+  }
+}
+
+function trigger (el, eventName) {
+  if (eventName === 'onmount') {
+    el.__redom_mounted = true;
+  } else if (eventName === 'onunmount') {
+    el.__redom_mounted = false;
+  }
+
+  var hooks = el.__redom_lifecycle;
+
+  if (!hooks) {
+    return;
+  }
+
+  var view = el.__redom_view;
+  var hookCount = 0;
+
+  view && view[eventName] && view[eventName]();
+
+  for (var hook in hooks) {
+    if (hook) {
+      hookCount++;
+    }
+  }
+
+  if (hookCount) {
+    var traverse = el.firstChild;
+
+    while (traverse) {
+      var next = traverse.nextSibling;
+
+      trigger(traverse, eventName);
+
+      traverse = next;
+    }
+  }
+}
+
+function setStyle (view, arg1, arg2) {
+  var el = getEl(view);
+
+  if (arg2 !== undefined) {
+    el.style[arg1] = arg2;
+  } else if (isString(arg1)) {
+    el.setAttribute('style', arg1);
+  } else {
+    for (var key in arg1) {
+      setStyle(el, key, arg1[key]);
+    }
+  }
+}
+
+function setAttr (view, arg1, arg2) {
+  var el = getEl(view);
+  var isSVG = el instanceof window.SVGElement;
+
+  if (arg2 !== undefined) {
+    if (arg1 === 'style') {
+      setStyle(el, arg2);
+    } else if (isSVG && isFunction(arg2)) {
+      el[arg1] = arg2;
+    } else if (!isSVG && (arg1 in el || isFunction(arg2))) {
+      el[arg1] = arg2;
+    } else {
+      el.setAttribute(arg1, arg2);
+    }
+  } else {
+    for (var key in arg1) {
+      setAttr(el, key, arg1[key]);
+    }
+  }
+}
+
+var text = function (str) { return document.createTextNode(str); };
+
+function parseArguments (element, args) {
+  for (var i = 0; i < args.length; i++) {
+    var arg = args[i];
+
+    if (arg !== 0 && !arg) {
+      continue;
+    }
+
+    // support middleware
+    if (typeof arg === 'function') {
+      arg(element);
+    } else if (isString(arg) || isNumber(arg)) {
+      element.appendChild(text(arg));
+    } else if (isNode(getEl(arg))) {
+      mount(element, arg);
+    } else if (arg.length) {
+      parseArguments(element, arg);
+    } else if (typeof arg === 'object') {
+      setAttr(element, arg);
+    }
+  }
+}
+
+var ensureEl = function (parent) { return isString(parent) ? html(parent) : getEl(parent); };
+var getEl = function (parent) { return (parent.nodeType && parent) || (!parent.el && parent) || getEl(parent.el); };
+
+var isString = function (a) { return typeof a === 'string'; };
+var isNumber = function (a) { return typeof a === 'number'; };
+var isFunction = function (a) { return typeof a === 'function'; };
+
+var isNode = function (a) { return a && a.nodeType; };
+
+var htmlCache = {};
+
+var memoizeHTML = function (query) { return htmlCache[query] || (htmlCache[query] = createElement(query)); };
+
+/**
+ * Create HTML elements with HyperScript-like syntax.
+ * @return {Node}
+ * @param {(String|Node)} query - Query (tagname#ids.classes)
+ * @param {*} args
+ */
+function html (query) {
+  var args = [], len = arguments.length - 1;
+  while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
+
+  var element;
+
+  if (isString(query)) {
+    element = memoizeHTML(query).cloneNode(false);
+  } else if (isNode(query)) {
+    element = query.cloneNode(false);
+  } else {
+    throw new Error('At least one argument required');
+  }
+
+  parseArguments(element, args);
+
+  return element;
+}
+
+/**
+ * @return {html}
+ * @param {{(String|Node)}} query - Query (tagname#ids.classes)
+ */
+function extend (query) {
+  var clone = memoizeHTML(query);
+
+  return html.bind(this, clone);
+}
+
+html.extend = extend;
+
+var el = html;
+
+function setChildren (parent, children) {
+  if (children.length === undefined) {
+    return setChildren(parent, [children]);
+  }
+
+  var parentEl = getEl(parent);
+  var traverse = parentEl.firstChild;
+
+  for (var i = 0; i < children.length; i++) {
+    var child = children[i];
+
+    if (!child) {
+      continue;
+    }
+
+    var childEl = getEl(child);
+
+    if (childEl === traverse) {
+      traverse = traverse.nextSibling;
+      continue;
+    }
+
+    mount(parent, child, traverse);
+  }
+
+  while (traverse) {
+    var next = traverse.nextSibling;
+
+    unmount(parent, traverse);
+
+    traverse = next;
+  }
+}
+
+var propKey = function (key) { return function (item) { return item[key]; }; };
+
+/**
+ * List factory
+ * @return {List}
+ * @param {(Node | function)} parent
+ * @param {function} View
+ * @param {String | function} key
+ * @param {*} initData
+ */
+function list (parent, View, key, initData) {
+  return new List(parent, View, key, initData);
+}
+
+/**
+ * Create list of Views
+ * @return {List}
+ * @param {(Node | function)} parent
+ * @param {function} View
+ * @param {String | function} key
+ * @param {*} initData
+ */
+function List (parent, View, key, initData) {
+  this.__redom_list = true;
+  this.View = View;
+  this.initData = initData;
+  this.views = [];
+  this.el = ensureEl(parent);
+
+  if (key != null) {
+    this.lookup = {};
+    this.key = isFunction(key) ? key : propKey(key);
+  }
+}
+
+/**
+ *
+ * @param {(Node | function)} parent
+ * @param {function} View
+ * @param {String | function} key
+ * @param {*} initData
+ */
+function extend$1 (parent, View, key, initData) {
+  return List.bind(List, parent, View, key, initData);
+}
+
+List.extend = extend$1;
+
+list.extend = List.extend;
+
+List.prototype.update = function (data) {
+  var this$1 = this;
+  if ( data === void 0 ) data = [];
+
+  var View = this.View;
+  var key = this.key;
+  var keySet = key != null;
+  var initData = this.initData;
+  var newViews = new Array(data.length);
+  var oldViews = this.views;
+  var newLookup = key && {};
+  var oldLookup = key && this.lookup;
+
+  for (var i = 0; i < data.length; i++) {
+    var item = data[i];
+    var view = (void 0);
+
+    if (keySet) {
+      var id = key(item);
+      view = newViews[i] = oldLookup[id] || new View(initData, item, i, data);
+      newLookup[id] = view;
+      view.__id = id;
+    } else {
+      view = newViews[i] = oldViews[i] || new View(initData, item, i, data);
+    }
+    var el = view.el;
+    if (el.__redom_list) {
+      el = el.el;
+    }
+    el.__redom_view = view;
+    view.update && view.update(item, i, data);
+  }
+
+  if (keySet) {
+    for (var i$1 = 0; i$1 < oldViews.length; i$1++) {
+      var id$1 = oldViews[i$1].__id;
+
+      if (!(id$1 in newLookup)) {
+        unmount(this$1, oldLookup[id$1]);
+      }
+    }
+  }
+
+  setChildren(this, newViews);
+
+  if (keySet) {
+    this.lookup = newLookup;
+  }
+  this.views = newViews;
+};
+
+function router (parent, Views, initData) {
+  return new Router(parent, Views, initData);
+}
+
+var Router = function Router (parent, Views, initData) {
+  this.el = ensureEl(parent);
+  this.Views = Views;
+  this.initData = initData;
+};
+Router.prototype.update = function update (route, data) {
+  if (route !== this.route) {
+    var Views = this.Views;
+    var View = Views[route];
+
+    this.view = View && new View(this.initData, data);
+    this.route = route;
+
+    setChildren(this.el, [ this.view ]);
+  }
+  this.view && this.view.update && this.view.update(data, route);
+};
+
+var SVG = 'http://www.w3.org/2000/svg';
+
+var svgCache = {};
+
+var memoizeSVG = function (query) { return svgCache[query] || (svgCache[query] = createElement(query, SVG)); };
+
+function svg (query) {
+  var args = [], len = arguments.length - 1;
+  while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
+
+  var element;
+
+  if (isString(query)) {
+    element = memoizeSVG(query).cloneNode(false);
+  } else if (isNode(query)) {
+    element = query.cloneNode(false);
+  } else {
+    throw new Error('At least one argument required');
+  }
+
+  parseArguments(element, args);
+
+  return element;
+}
+
+svg.extend = function (query) {
+  var clone = memoizeSVG(query);
+
+  return svg.bind(this, clone);
+};
+
+export { html, el, list, List, mount, unmount, router, Router, setAttr, setStyle, setChildren, svg, text };
