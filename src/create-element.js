@@ -5,7 +5,7 @@ const DOT = '.'.charCodeAt(0);
  * Create HTML or SVG elements by query and namespace
  * @return {Node}
  * @param {string} query - Query (tagname#ids.classes)
- * @param {string} ns - Namespace
+ * @param {string} [ns] - Namespace
  */
 export function createElement (query, ns) {
   let tag;

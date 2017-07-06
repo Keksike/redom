@@ -9,7 +9,7 @@ const memoizeHTML = query => htmlCache[query] || (htmlCache[query] = createEleme
  * Create HTML elements with HyperScript-like syntax.
  * @return {Node}
  * @param {(String|Node)} query - Query (tagname#ids.classes)
- * @param {*} args
+ * @param {*} [args]
  */
 export function html (query, ...args) {
   let element;

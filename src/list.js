@@ -12,8 +12,8 @@ const propKey = key => item => item[key];
  * @return {List}
  * @param {(Node | function)} parent
  * @param {function} View
- * @param {String | function} key
- * @param {*} initData
+ * @param {String | function} [key]
+ * @param {*} [initData]
  */
 export function list (parent, View, key, initData) {
   return new List(parent, View, key, initData);
@@ -31,8 +31,8 @@ export class List {
    * Create a List
    * @param {(Node | function)} parent
    * @param {function} View
-   * @param {String | function} key
-   * @param {*} initData
+   * @param {String | function} [key]
+   * @param {*} [initData]
    */
   constructor (parent, View, key, initData) {
     this.__redom_list = true;
@@ -104,8 +104,8 @@ export class List {
  * @return {List}
  * @param {(Node | function)} parent
  * @param {function} View
- * @param {String | function} key
- * @param {*} initData
+ * @param {String | function} [key]
+ * @param {*} [initData]
  */
 function extend (parent, View, key, initData) {
   return List.bind(List, parent, View, key, initData);

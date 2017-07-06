@@ -2,6 +2,12 @@ import { getEl } from './util';
 
 const hookNames = ['onmount', 'onunmount'];
 
+/**
+ * Mount elements or views
+ * @param {(Element | function)} parent
+ * @param {(Element | function)} child
+ * @param {(Element | function)} [before]
+ */
 export function mount (parent, child, before) {
   const parentEl = getEl(parent);
   let childEl = getEl(child);
@@ -33,6 +39,11 @@ export function mount (parent, child, before) {
   return child;
 }
 
+/**
+ * Unmount elements or views
+ * @param {(Element | function)} parent
+ * @param {(Element | function)} child
+ */
 export function unmount (parent, child) {
   const parentEl = getEl(parent);
   const childEl = getEl(child);

@@ -5,7 +5,7 @@ var DOT = '.'.charCodeAt(0);
  * Create HTML or SVG elements by query and namespace
  * @return {Node}
  * @param {string} query - Query (tagname#ids.classes)
- * @param {string} ns - Namespace
+ * @param {string} [ns] - Namespace
  */
 function createElement (query, ns) {
   var tag;
@@ -68,6 +68,12 @@ function createElement (query, ns) {
 
 var hookNames = ['onmount', 'onunmount'];
 
+/**
+ * Mount elements or views
+ * @param {(Element | function)} parent
+ * @param {(Element | function)} child
+ * @param {(Element | function)} [before]
+ */
 function mount (parent, child, before) {
   var parentEl = getEl(parent);
   var childEl = getEl(child);
@@ -99,6 +105,11 @@ function mount (parent, child, before) {
   return child;
 }
 
+/**
+ * Unmount elements or views
+ * @param {(Element | function)} parent
+ * @param {(Element | function)} child
+ */
 function unmount (parent, child) {
   var parentEl = getEl(parent);
   var childEl = getEl(child);
@@ -314,7 +325,7 @@ var memoizeHTML = function (query) { return htmlCache[query] || (htmlCache[query
  * Create HTML elements with HyperScript-like syntax.
  * @return {Node}
  * @param {(String|Node)} query - Query (tagname#ids.classes)
- * @param {*} args
+ * @param {*} [args]
  */
 function html (query) {
   var args = [], len = arguments.length - 1;
@@ -393,8 +404,8 @@ var propKey = function (key) { return function (item) { return item[key]; }; };
  * @return {List}
  * @param {(Node | function)} parent
  * @param {function} View
- * @param {String | function} key
- * @param {*} initData
+ * @param {String | function} [key]
+ * @param {*} [initData]
  */
 function list (parent, View, key, initData) {
   return new List(parent, View, key, initData);
@@ -479,8 +490,8 @@ List.prototype.update = function update (data) {
  * @return {List}
  * @param {(Node | function)} parent
  * @param {function} View
- * @param {String | function} key
- * @param {*} initData
+ * @param {String | function} [key]
+ * @param {*} [initData]
  */
 function extend$1 (parent, View, key, initData) {
   return List.bind(List, parent, View, key, initData);
