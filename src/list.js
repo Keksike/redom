@@ -10,7 +10,7 @@ const propKey = key => item => item[key];
  * list helper comes to rescue.
  * https://redom.js.org/documentation/#lists
  * @return {List}
- * @param {(Node | function)} parent
+ * @param {Element | Object} parent
  * @param {function} View
  * @param {String | function} [key]
  * @param {*} [initData]
@@ -29,7 +29,7 @@ export function list (parent, View, key, initData) {
 export class List {
   /**
    * Create a List
-   * @param {(Node | function)} parent
+   * @param {Element | Object} parent
    * @param {function} View
    * @param {String | function} [key]
    * @param {*} [initData]
@@ -102,7 +102,7 @@ export class List {
 /**
  *
  * @return {List}
- * @param {(Node | function)} parent
+ * @param {Element | Object} parent
  * @param {function} View
  * @param {String | function} [key]
  * @param {*} [initData]

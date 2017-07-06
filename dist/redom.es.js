@@ -1,12 +1,6 @@
 var HASH = '#'.charCodeAt(0);
 var DOT = '.'.charCodeAt(0);
 
-/**
- * Create HTML or SVG elements by query and namespace
- * @return {Node}
- * @param {string} query - Query (tagname#ids.classes)
- * @param {string} [ns] - Namespace
- */
 function createElement (query, ns) {
   var tag;
   var id;
@@ -69,11 +63,20 @@ function createElement (query, ns) {
 var hookNames = ['onmount', 'onunmount'];
 
 /**
- * Mount elements or views
+ * Mount elements and components. If you define
+ * the third parameter, it works like insertBefore
+ * and otherwise it's like appendChild.
+ *
+ * Mount will trigger the onmount lifecycle event
+ * the first time you mount a child. If you mount
+ * the same child again to the same parent, onremount
+ * gets called. If you mount it to another place,
+ * onunmount and onmount get called. Read more about
+ * lifecycle events here.
  * https://redom.js.org/documentation/#mount
- * @param {(Element | function)} parent
- * @param {(Element | function)} child
- * @param {(Element | function)} [before]
+ * @param {Element | Object} parent
+ * @param {Element | Object} child
+ * @param {Element | Object} [before]
  */
 function mount (parent, child, before) {
   var parentEl = getEl(parent);
@@ -107,10 +110,10 @@ function mount (parent, child, before) {
 }
 
 /**
- * Unmount elements or views
+ * When you need to remove elements/components.
  * https://redom.js.org/documentation/#unmount
- * @param {(Element | function)} parent
- * @param {(Element | function)} child
+ * @param {Element | Object} parent
+ * @param {Element | Object} child
  */
 function unmount (parent, child) {
   var parentEl = getEl(parent);
@@ -285,7 +288,14 @@ function setAttr (view, arg1, arg2) {
   }
 }
 
-var text = function (str) { return document.createTextNode(str); };
+/**
+ * Create a text node (if you need a reference to the node).
+ * @return {Text}
+ * @param {*} str
+ */
+function text (str) {
+  return document.createTextNode(str);
+}
 
 function parseArguments (element, args) {
   for (var i = 0; i < args.length; i++) {
@@ -324,10 +334,14 @@ var htmlCache = {};
 var memoizeHTML = function (query) { return htmlCache[query] || (htmlCache[query] = createElement(query)); };
 
 /**
- * Create HTML elements with HyperScript-like syntax.
+ * Helper for document.createElement with couple of differences.
+ *
+ * The basic idea is to simply create elements with el and
+ * mount them with mount, almost like you would do with
+ * plain JavaScript.
  * https://redom.js.org/documentation/#elements
- * @return {Node}
- * @param {(String|Node)} query - Query (tagname#ids.classes)
+ * @return {Element}
+ * @param {String | Element} query - Query (tagname#ids.classes)
  * @param {*} [args]
  */
 function html (query) {
@@ -351,7 +365,7 @@ function html (query) {
 
 /**
  * @return {html}
- * @param {{(String|Node)}} query - Query (tagname#ids.classes)
+ * @param {String|Element} query - Query (tagname#ids.classes)
  */
 function extend (query) {
   var clone = memoizeHTML(query);
@@ -405,7 +419,7 @@ var propKey = function (key) { return function (item) { return item[key]; }; };
  * list helper comes to rescue.
  * https://redom.js.org/documentation/#lists
  * @return {List}
- * @param {(Node | function)} parent
+ * @param {Element | Object} parent
  * @param {function} View
  * @param {String | function} [key]
  * @param {*} [initData]
@@ -491,7 +505,7 @@ List.prototype.update = function update (data) {
 /**
  *
  * @return {List}
- * @param {(Node | function)} parent
+ * @param {Element | Object} parent
  * @param {function} View
  * @param {String | function} [key]
  * @param {*} [initData]
@@ -506,11 +520,23 @@ function router (parent, Views, initData) {
   return new Router(parent, Views, initData);
 }
 
+/**
+ * Router is a component router, which will
+ * create/update/remove components based on
+ * the current route.
+ * https://redom.js.org/documentation/#router
+ * @class Router
+ */
 var Router = function Router (parent, Views, initData) {
   this.el = ensureEl(parent);
   this.Views = Views;
   this.initData = initData;
 };
+/**
+ *
+ * @param {String} route
+ * @param {*} [data]
+ */
 Router.prototype.update = function update (route, data) {
   if (route !== this.route) {
     var Views = this.Views;
@@ -530,6 +556,12 @@ var svgCache = {};
 
 var memoizeSVG = function (query) { return svgCache[query] || (svgCache[query] = createElement(query, SVG)); };
 
+/**
+ * el and html only create HTML elements. If you
+ * want to create a SVG element, you must use `svg`.
+ * @param {String | Element} query
+ * @param {*} args
+ */
 function svg (query) {
   var args = [], len = arguments.length - 1;
   while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
@@ -549,10 +581,16 @@ function svg (query) {
   return element;
 }
 
-svg.extend = function (query) {
+svg.extend = extend$2;
+
+/**
+ * @return {svg}
+ * @param {String | Element} query
+ */
+function extend$2 (query) {
   var clone = memoizeSVG(query);
 
   return svg.bind(this, clone);
-};
+}
 
 export { html, el, list, List, mount, unmount, router, Router, setAttr, setStyle, setChildren, svg, text };

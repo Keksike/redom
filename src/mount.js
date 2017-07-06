@@ -3,11 +3,20 @@ import { getEl } from './util';
 const hookNames = ['onmount', 'onunmount'];
 
 /**
- * Mount elements or views
+ * Mount elements and components. If you define
+ * the third parameter, it works like insertBefore
+ * and otherwise it's like appendChild.
+ *
+ * Mount will trigger the onmount lifecycle event
+ * the first time you mount a child. If you mount
+ * the same child again to the same parent, onremount
+ * gets called. If you mount it to another place,
+ * onunmount and onmount get called. Read more about
+ * lifecycle events here.
  * https://redom.js.org/documentation/#mount
- * @param {(Element | function)} parent
- * @param {(Element | function)} child
- * @param {(Element | function)} [before]
+ * @param {Element | Object} parent
+ * @param {Element | Object} child
+ * @param {Element | Object} [before]
  */
 export function mount (parent, child, before) {
   const parentEl = getEl(parent);
@@ -41,10 +50,10 @@ export function mount (parent, child, before) {
 }
 
 /**
- * Unmount elements or views
+ * When you need to remove elements/components.
  * https://redom.js.org/documentation/#unmount
- * @param {(Element | function)} parent
- * @param {(Element | function)} child
+ * @param {Element | Object} parent
+ * @param {Element | Object} child
  */
 export function unmount (parent, child) {
   const parentEl = getEl(parent);

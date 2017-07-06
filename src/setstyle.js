@@ -1,5 +1,11 @@
 import { isString, getEl } from './util';
 
+/**
+ * Easier way to update style attribute.
+ * @param {Element | Object} view
+ * @param {String | Object} arg1
+ * @param {*} [arg2]
+ */
 export function setStyle (view, arg1, arg2) {
   const el = getEl(view);
 

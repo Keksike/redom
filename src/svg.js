@@ -7,6 +7,12 @@ const svgCache = {};
 
 const memoizeSVG = query => svgCache[query] || (svgCache[query] = createElement(query, SVG));
 
+/**
+ * el and html only create HTML elements. If you
+ * want to create a SVG element, you must use `svg`.
+ * @param {String | Element} query
+ * @param {*} args
+ */
 export function svg (query, ...args) {
   let element;
 
@@ -23,8 +29,14 @@ export function svg (query, ...args) {
   return element;
 }
 
-svg.extend = function (query) {
+svg.extend = extend;
+
+/**
+ * @return {svg}
+ * @param {String | Element} query
+ */
+function extend (query) {
   const clone = memoizeSVG(query);
 
   return svg.bind(this, clone);
-};
+}

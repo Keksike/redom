@@ -5,12 +5,29 @@ export function router (parent, Views, initData) {
   return new Router(parent, Views, initData);
 }
 
+/**
+ * Router is a component router, which will
+ * create/update/remove components based on
+ * the current route.
+ * https://redom.js.org/documentation/#router
+ * @class Router
+ */
 export class Router {
+  /**
+   * @param {Element | Object} parent
+   * @param {Object} Views
+   * @param {*} [initData]
+   */
   constructor (parent, Views, initData) {
     this.el = ensureEl(parent);
     this.Views = Views;
     this.initData = initData;
   }
+  /**
+   *
+   * @param {String} route
+   * @param {*} [data]
+   */
   update (route, data) {
     if (route !== this.route) {
       const Views = this.Views;

@@ -1,6 +1,14 @@
 import { mount, unmount } from './mount';
 import { getEl } from './util';
 
+/**
+ * RE:DOM uses setChildren(parent, children) under
+ * the hood for lists. When you call setChildren,
+ * RE:DOM will add/reorder/remove elements/components
+ * automatically by reference.
+ * @param {Element | Object} parent
+ * @param {Array | Element | Object} children
+ */
 export function setChildren (parent, children) {
   if (children.length === undefined) {
     return setChildren(parent, [children]);

@@ -6,10 +6,14 @@ const htmlCache = {};
 const memoizeHTML = query => htmlCache[query] || (htmlCache[query] = createElement(query));
 
 /**
- * Create HTML elements with HyperScript-like syntax.
+ * Helper for document.createElement with couple of differences.
+ *
+ * The basic idea is to simply create elements with el and
+ * mount them with mount, almost like you would do with
+ * plain JavaScript.
  * https://redom.js.org/documentation/#elements
- * @return {Node}
- * @param {(String|Node)} query - Query (tagname#ids.classes)
+ * @return {Element}
+ * @param {String | Element} query - Query (tagname#ids.classes)
  * @param {*} [args]
  */
 export function html (query, ...args) {
@@ -30,7 +34,7 @@ export function html (query, ...args) {
 
 /**
  * @return {html}
- * @param {{(String|Node)}} query - Query (tagname#ids.classes)
+ * @param {String|Element} query - Query (tagname#ids.classes)
  */
 function extend (query) {
   const clone = memoizeHTML(query);
