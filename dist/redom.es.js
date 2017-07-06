@@ -386,7 +386,10 @@ function setChildren (parent, children) {
 var propKey = function (key) { return function (item) { return item[key]; }; };
 
 /**
- * List factory
+ * When you have dynamic data, it's not that easy to manually
+ * keep the elements and the data in sync. That's when the
+ * list helper comes to rescue.
+ * https://redom.js.org/documentation/#lists
  * @return {List}
  * @param {(Node | function)} parent
  * @param {function} View
@@ -398,14 +401,13 @@ function list (parent, View, key, initData) {
 }
 
 /**
- * Create list of Views
- * @return {List}
- * @param {(Node | function)} parent
- * @param {function} View
- * @param {String | function} key
- * @param {*} initData
+ * When you have dynamic data, it's not that easy to manually
+ * keep the elements and the data in sync. That's when the
+ * list helper comes to rescue.
+ * https://redom.js.org/documentation/#lists
+ * @class List
  */
-function List (parent, View, key, initData) {
+var List = function List (parent, View, key, initData) {
   this.__redom_list = true;
   this.View = View;
   this.initData = initData;
@@ -416,26 +418,14 @@ function List (parent, View, key, initData) {
     this.lookup = {};
     this.key = isFunction(key) ? key : propKey(key);
   }
-}
-
+};
 /**
- *
- * @param {(Node | function)} parent
- * @param {function} View
- * @param {String | function} key
- * @param {*} initData
+ * Update the list
+ * @param {Array} data - Update list with data
  */
-function extend$1 (parent, View, key, initData) {
-  return List.bind(List, parent, View, key, initData);
-}
-
-List.extend = extend$1;
-
-list.extend = List.extend;
-
-List.prototype.update = function (data) {
-  var this$1 = this;
-  if ( data === void 0 ) data = [];
+List.prototype.update = function update (data) {
+    var this$1 = this;
+    if ( data === void 0 ) data = [];
 
   var View = this.View;
   var key = this.key;
@@ -483,6 +473,20 @@ List.prototype.update = function (data) {
   }
   this.views = newViews;
 };
+
+/**
+ *
+ * @return {List}
+ * @param {(Node | function)} parent
+ * @param {function} View
+ * @param {String | function} key
+ * @param {*} initData
+ */
+function extend$1 (parent, View, key, initData) {
+  return List.bind(List, parent, View, key, initData);
+}
+
+list.extend = List.extend = extend$1;
 
 function router (parent, Views, initData) {
   return new Router(parent, Views, initData);
