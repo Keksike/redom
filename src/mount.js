@@ -4,6 +4,7 @@ const hookNames = ['onmount', 'onunmount'];
 
 /**
  * Mount elements or views
+ * https://redom.js.org/documentation/#mount
  * @param {(Element | function)} parent
  * @param {(Element | function)} child
  * @param {(Element | function)} [before]
@@ -41,6 +42,7 @@ export function mount (parent, child, before) {
 
 /**
  * Unmount elements or views
+ * https://redom.js.org/documentation/#unmount
  * @param {(Element | function)} parent
  * @param {(Element | function)} child
  */

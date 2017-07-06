@@ -7,6 +7,7 @@ const memoizeHTML = query => htmlCache[query] || (htmlCache[query] = createEleme
 
 /**
  * Create HTML elements with HyperScript-like syntax.
+ * https://redom.js.org/documentation/#elements
  * @return {Node}
  * @param {(String|Node)} query - Query (tagname#ids.classes)
  * @param {*} [args]

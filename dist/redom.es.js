@@ -70,6 +70,7 @@ var hookNames = ['onmount', 'onunmount'];
 
 /**
  * Mount elements or views
+ * https://redom.js.org/documentation/#mount
  * @param {(Element | function)} parent
  * @param {(Element | function)} child
  * @param {(Element | function)} [before]
@@ -107,6 +108,7 @@ function mount (parent, child, before) {
 
 /**
  * Unmount elements or views
+ * https://redom.js.org/documentation/#unmount
  * @param {(Element | function)} parent
  * @param {(Element | function)} child
  */
@@ -323,6 +325,7 @@ var memoizeHTML = function (query) { return htmlCache[query] || (htmlCache[query
 
 /**
  * Create HTML elements with HyperScript-like syntax.
+ * https://redom.js.org/documentation/#elements
  * @return {Node}
  * @param {(String|Node)} query - Query (tagname#ids.classes)
  * @param {*} [args]
